@@ -1,40 +1,48 @@
 const express = require("express");
 const cors = require("cors");
 const { Pool } = require("pg");
+require("dotenv").config();
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
+// Neon PostgreSQL connection
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-    ssl: {
-        rejectUnauthorized: false
-          }
-          });
+  ssl: {
+    rejectUnauthorized: false
+  }
+});
 
-          app.get("/", (req, res) => {
-            res.send("AttendIQ Backend Running 🚀");
-            });
+// Home route
+app.get("/", (req, res) => {
+  res.send("AttendIQ Backend Running 🚀");
+});
 
-            app.get("/students", async (req, res) => {
-              try {
-                  const result = await pool.query(
-                        "SELECT * FROM students"
-                            );
+// Get students
+app.get("/students", async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT * FROM students"
+    );
 
-                                res.json(result.rows);
+    res.json(result.rows);
 
-                                  } catch (err) {
-                                      res.status(500).json({
-                                            error: err.message
-                                                });
-                                                  }
-                                                  });
+  } catch (err) {
+    res.status(500).json({
+      error: err.message
+    });
+  }
+});
 
-                                                  const PORT = process.env.PORT || 3000;
+// Server start
+const PORT = process.env.PORT || 3000;
 
+app.listen(PORT, () => {
+  console.log(`Server running on ${PORT}`);
+});
                                                   app.listen(PORT, () => {
                                                     console.log(`Server running on ${PORT}`);
                                                     });
